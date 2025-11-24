@@ -311,10 +311,58 @@ they don’t know or don’t take the time to read it - almost certainly their i
 
 ### Impact on scientific computing and AI/ML workflows
 
-**TODO: Let’s insert as many quotes as possible from the community**
-
 The packaging limitations particularly affect scientific computing and AI/ML applications where performance optimization
 is critical.
+
+Leah Wasser, who designs Python and data skills training programs for
+scientists and is Executive Director and Founder of pyOpenSci, writes:
+
+> *Accessing compute to run models and process large datasets has been a pain
+> point in scientific computing for over a decade. Today, researchers and data
+> scientists still spend hours to days installing core tools like PyTorch
+> before they can begin their work. This complexity is a significant barrier to
+> entry for users who want to use Python in their daily work. The WheelNext
+> Wheel Variants proposal offers a pathway to address persistent installation
+> and compute-access problems within the broader packaging ecosystem without
+> creating another, new and separate solution. Let's focus on the big picture
+> of enhancing user experience - it will make a real difference.*
+
+Carlos Córdoba, lead developer of the Spyder IDE, writes:
+
+> *We've been developing a package manager for Spyder, a Python IDE for
+> scientists, engineers and data analysts, with three main aims. First, to make
+> our users' life easier by allowing them to create environments and install
+> packages using a GUI instead of introducing arcane commands in a terminal.
+> Second, to make their research code reproducible, so they can share it and
+> its dependencies with their peers. And third, to allow users to transfer
+> their code to machines in HPC clusters or the cloud with no hassle, so they
+> can leverage the vast compute resources available there. With the
+> improvements proposed by this PEP, we'd able to make that a reality for all
+> PyPI users because installing widely used scientific libraries (like PyTorch
+> and CuPy) for the right GPU and instruction set and would be straightforward
+> and transparent for tools built on top of uv/pip.*
+
+**OR**:
+
+> *We've been developing a package manager for Spyder for the last couple of
+> years with two aims. First, to make our users' life easier (mostly scientists
+> and engineers) by allowing them to create environments and install packages
+> using a GUI instead of introducing arcane commands in a terminal. And second,
+> and most importantly, to make their research code reproducible, so they can
+> transfer it to other machines with no hassle. With the improvements proposed
+> by this PEP, we'd able to make that a reality for all PyPI users because
+> installing widely used scientific libraries, like NumPy and Pytorch, for the
+> right instruction set and GPU would be straightforward and transparent for
+> tools built on top of uv/pip.*
+
+Travis Oliphant, author of NumPy and SciPy and Chief AI Architect at OpenTeams, writes:
+
+> *This PEP is a significant step forward in improving the deployment
+> challenges of the Python ecosystem in the face of increasingly complex and
+> varied hardware configurations.  By enabling multiple deployment targets for
+> the same libraries in a standard way, it will consolidate and simplify many
+> awkward and time-consuming work-arounds developers have been pursuing to
+> support the rapidly growing AI/ML and scientific computing worlds.*
 
 #### Heterogeneous computing environments
 
