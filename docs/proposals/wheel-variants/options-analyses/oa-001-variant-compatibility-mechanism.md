@@ -77,14 +77,14 @@ Requirements with `must` priority act as pass/fail gates, not weights: an option
 |----|-------------------------------------------------------------------------------|----------|----------------------|
 | C1 | Extensibility to new accelerator dimensions without spec or installer changes | Critical | SYS-007              |
 | C2 | Time-to-support for new hardware (vendor commitment → user install)           | High     | implied by SYS-007   |
-| C3 | Trust surface: where untrusted code runs and what it can do                   | High     | SYS-008, SEC-002, SEC-006, SEC-007 |
+| C3 | Trust surface: where untrusted code runs and what it can do                   | Critical | SYS-008, SEC-002, SEC-006, SEC-007 |
 | C4 | Maintenance allocation: which team carries which burden                       | Medium   | — (unsourced; priority especially draft) |
 | C5 | Installer and index complexity for non-variant users                          | Critical | SYS-006              |
 | C6 | Cross-package coordination (consistent CUDA major across PyTorch and CuPy)    | High     | RES-003              |
 | C7 | User-facing simplicity and explainability                                     | Critical | UX-001               |
 | C8 | Degradation when relevant detection code is missing                           | Medium   | RES-004, RES-007     |
 
-The weights are consistent with the recommendation's revealed preferences: C1 and C7 are Critical because they are what the recommendation turns on (C1 disqualifies Option 1; C7 is the argument against Option 4 as default). C3 is High rather than Critical because the non-negotiable part of trust is already enforced by the gates, and the recommendation knowingly accepts a mixed C3 score to win on C1 and C7. C8 is Medium because the `must` requirements behind it guarantee every surviving option an acceptable fallback, so it barely differentiates.
+The weights are consistent with the recommendation's revealed preferences: C1 and C7 are Critical because they are what the recommendation turns on (C1 disqualifies Option 1; C7 is the argument against Option 4 as default). C3 is Critical as well: reviewer response made clear that resolution-time code execution is a hard no for a substantial constituency — the breadth of the reaction to Option 2a is the evidence — not one concern among several. That makes the central tension of this analysis explicit: the recommended option scores only mixed on a Critical property, and survives because the gates (SEC-007, PROV-003) plus the mitigations in Option 2's trust model bound the exposure. If those mitigations are weakened, the Critical weight is precisely why the recommendation must be revisited in Option 4's favor (see the contingency note in §Recommendation). C8 is Medium because the `must` requirements behind it guarantee every surviving option an acceptable fallback, so it barely differentiates.
 
 ---
 
@@ -152,7 +152,7 @@ The recommendation is contingent on the providers PEP carrying through on the ov
 - **The boundary between "external provider plugin" and "package shipping its own provider" is fuzzy** for packages that ship a single dominant variant axis. Worth a follow-up OA if the pattern becomes common.
 - **Option 4 as default vs as configuration is itself contestable.** The recommendation treats Option 4 as a reachable configuration of Option 2, but some reviewers may argue Option 4 should be the default for trust reasons, with provider-based detection as the opt-in. The matrix's C7 assessment is the main counter-argument; if the working group's read of the user base differs, the recommendation should be revisited.
 - **The Option 2 / Option 2a distinction may erode in practice.** If opt-in prompts are frequent enough, users will blanket-enable every provider, converging on Option 2a de facto while retaining its ceremony — the security-fatigue risk PEP 817 raises. This is the strongest argument for vendoring and allow-listing commonly used providers rather than prompting per provider: the guardrails only hold if the safe path is also the low-friction path.
-- **Property priorities are a first draft.** C4 in particular traces to no requirement, so its Medium weight is pure judgment. Re-weighting C3 (trust surface) to Critical is the coherent way to argue for Option 4 as the default — it gives the preceding Option-4-as-default bullet a concrete handle: that disagreement is about a weight, not about the scores.
+- **Property priorities are a first draft.** C4 in particular traces to no requirement, so its Medium weight is pure judgment. C3 was raised from an initial High to Critical after review — the breadth of hard-no reactions to Option 2a showed trust is not one concern among several. With C3 Critical, the Option-4-as-default position (preceding bullet) sharpens from a disagreement about weights to a direct question about scores: whether Option 2's mitigations genuinely bound the exposure enough to justify a mixed C3 rating rather than a weak one.
 
 ---
 
