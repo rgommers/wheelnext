@@ -1,7 +1,7 @@
 # OA-001 — Variant Compatibility Mechanism
 
 **Status:** Draft · **Decision target:** Providers PEP · **Date:** 2026-05-23
-**Related requirements:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004
+**Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004
 
 ---
 
@@ -69,37 +69,39 @@ Note that the user-types-values and user-runs-a-detection-tool variants are equi
 
 ---
 
-## Evaluation criteria
+## Desirable properties
 
-Drawn from requirements where applicable.
+Requirements with `must` priority act as pass/fail gates, not weights: an option that violates one is rejected regardless of how well it scores elsewhere in the matrix (this is what disqualifies Option 2a against SEC-007 and PROV-003). The properties below are the comparative dimensions used to weigh the options that pass the gates. Each traces to the requirements register where applicable. Priorities are a draft proposal for discussion, not settled; see Dissent.
 
-| #  | Criterion                                                                    | Source(s)            |
-|----|------------------------------------------------------------------------------|----------------------|
-| C1 | Extensibility to new accelerator dimensions without spec or installer changes | SYS-007              |
-| C2 | Time-to-support for new hardware (vendor commitment → user install)           | implied by SYS-007   |
-| C3 | Trust surface: where untrusted code runs and what it can do                   | SYS-008, SEC-002, SEC-006, SEC-007 |
-| C4 | Maintenance allocation: which team carries which burden                       | —                    |
-| C5 | Installer and index complexity for non-variant users                          | SYS-006              |
-| C6 | Cross-package coordination (consistent CUDA major across PyTorch and CuPy)    | RES-003              |
-| C7 | User-facing simplicity and explainability                                     | UX-001               |
-| C8 | Degradation when relevant detection code is missing                           | RES-004, RES-007     |
+| #  | Property                                                                      | Priority | Traces to            |
+|----|-------------------------------------------------------------------------------|----------|----------------------|
+| C1 | Extensibility to new accelerator dimensions without spec or installer changes | Critical | SYS-007              |
+| C2 | Time-to-support for new hardware (vendor commitment → user install)           | High     | implied by SYS-007   |
+| C3 | Trust surface: where untrusted code runs and what it can do                   | High     | SYS-008, SEC-002, SEC-006, SEC-007 |
+| C4 | Maintenance allocation: which team carries which burden                       | Medium   | — (unsourced; priority especially draft) |
+| C5 | Installer and index complexity for non-variant users                          | Critical | SYS-006              |
+| C6 | Cross-package coordination (consistent CUDA major across PyTorch and CuPy)    | High     | RES-003              |
+| C7 | User-facing simplicity and explainability                                     | Critical | UX-001               |
+| C8 | Degradation when relevant detection code is missing                           | Medium   | RES-004, RES-007     |
+
+The weights are consistent with the recommendation's revealed preferences: C1 and C7 are Critical because they are what the recommendation turns on (C1 disqualifies Option 1; C7 is the argument against Option 4 as default). C3 is High rather than Critical because the non-negotiable part of trust is already enforced by the gates, and the recommendation knowingly accepts a mixed C3 score to win on C1 and C7. C8 is Medium because the `must` requirements behind it guarantee every surviving option an acceptable fallback, so it barely differentiates.
 
 ---
 
 ## Assessment
 
-> ✅ Strong · ⚠️ Moderate / Mixed · ❌ Weak. The symbols pair shape with color (checkmark, warning triangle, cross) so the ratings do not rely on color perception. The prose after each indicator explains the rating.
+> Legend (each rating pairs a distinct shape with a distinct color, so the matrix stays readable under color-vision deficiency or monochrome printing): **✅✅** strong · **✅** adequate · **⚠️** mixed / partial · **⛔** weak / fails · **➖** not applicable. The prose after each indicator explains the rating.
 
-| Criterion           | Option 1 — hardcoded                              | Option 2 — providers                                                      | Option 2a — providers, no guardrails                                | Option 3 — per-package                                              | Option 4 — user-declared                                              |
+| Property            | Option 1 — hardcoded                              | Option 2 — providers                                                      | Option 2a — providers, no guardrails                                | Option 3 — per-package                                              | Option 4 — user-declared                                              |
 |---------------------|---------------------------------------------------|---------------------------------------------------------------------------|---------------------------------------------------------------------|---------------------------------------------------------------------|-----------------------------------------------------------------------|
-| **C1 Extensibility** | ❌ Poor — every new dimension needs installer changes | ✅ Strong — providers ship independently                                     | ✅ As Option 2                                                        | ⚠️ Strong per package, weak across the ecosystem                       | ⚠️ Moderate — new dimensions require spec-level marker namespace extension, but no installer code |
-| **C2 Time-to-support** | ❌ Months — vendor waits on installer release cycles | ✅ Weeks — provider publishes when ready                                     | ✅ Best of any option — provider publishes and is picked up with no installer or user step | ⚠️ Per package; no shared timeline                                     | ⚠️ Spec change first (months); after that, immediate per user            |
-| **C3 Trust surface** | ✅ No new trust surface — logic runs in already-trusted installer code (but see Discussion) | ⚠️ New: provider code runs at resolution. Mitigated by PROV-002, PROV-003 and OV-003   | ❌ Worst of any option — automatic resolution-time execution of code named by untrusted metadata | ⚠️ Per package; detection runs at install for every variant-shipping package | ✅ Smallest of any option — no detection code runs anywhere              |
-| **C4 Maintenance allocation** | ❌ Concentrated on installer teams; vendors have no direct contribution path | ✅ Distributed to vendors and community; installer stays generic             | ✅ As Option 2                                                        | ❌ Duplicated across packages; each author maintains the same logic    | ⚠️ Distributed to users (and optionally to vendor-shipped helper tools outside the spec) |
-| **C5 Non-variant complexity** | ✅ None                                              | ✅ Minimal — providers only loaded when a variant package is in resolution   | ✅ As Option 2                                                        | ✅ None for non-variant packages                                       | ✅ None                                                                  |
-| **C6 Cross-package coordination** | ✅ Possible — installer has the full picture        | ✅ Possible — shared providers can coordinate                                | ✅ As Option 2                                                        | ❌ Difficult — no shared mechanism                                     | ✅ Possible — installer has the user-declared values to consistency-check against |
-| **C7 User simplicity** | ⚠️ Best for the default case; worst when detection is wrong (no extension point) | ⚠️ Moderate — users may need to install a provider; errors explainable per provider | ✅ Zero-friction default — the UX ceiling Option 2 is measured against | ❌ Worst — every package presents detection differently                | ⚠️ Poor for casual users (must know CUDA version, instruction sets, etc.); strong for users who already manage their environment carefully |
-| **C8 Missing detection** | ✅ N/A — detection is always present by construction | ✅ Falls back to null variant per RES-004; explainable                       | ✅ Provider auto-installed, so rarely missing; falls back to null variant per RES-004 when it cannot be fetched | ⚠️ Falls back per package; behavior varies                             | ✅ Falls back to null variant if user has not declared values; explainable |
+| **C1 Extensibility** | ⛔ Poor — every new dimension needs installer changes | ✅✅ Strong — providers ship independently                                     | ✅✅ As Option 2                                                        | ⚠️ Strong per package, weak across the ecosystem                       | ⚠️ Moderate — new dimensions require spec-level marker namespace extension, but no installer code |
+| **C2 Time-to-support** | ⛔ Months — vendor waits on installer release cycles | ✅ Weeks — provider publishes when ready                                     | ✅✅ Best of any option — provider publishes and is picked up with no installer or user step | ⚠️ Per package; no shared timeline                                     | ⚠️ Spec change first (months); after that, immediate per user            |
+| **C3 Trust surface** | ✅ No new trust surface — logic runs in already-trusted installer code (but see Discussion) | ⚠️ New: provider code runs at resolution. Mitigated by PROV-002, PROV-003 and OV-003   | ⛔ Worst of any option — automatic resolution-time execution of code named by untrusted metadata | ⚠️ Per package; detection runs at install for every variant-shipping package | ✅✅ Smallest of any option — no detection code runs anywhere              |
+| **C4 Maintenance allocation** | ⛔ Concentrated on installer teams; vendors have no direct contribution path | ✅✅ Distributed to vendors and community; installer stays generic             | ✅✅ As Option 2                                                        | ⛔ Duplicated across packages; each author maintains the same logic    | ⚠️ Distributed to users (and optionally to vendor-shipped helper tools outside the spec) |
+| **C5 Non-variant complexity** | ✅✅ None                                              | ✅ Minimal — providers only loaded when a variant package is in resolution   | ✅ As Option 2                                                        | ✅✅ None for non-variant packages                                       | ✅✅ None                                                                  |
+| **C6 Cross-package coordination** | ✅ Possible — installer has the full picture        | ✅ Possible — shared providers can coordinate                                | ✅ As Option 2                                                        | ⛔ Difficult — no shared mechanism                                     | ✅ Possible — installer has the user-declared values to consistency-check against |
+| **C7 User simplicity** | ⚠️ Best for the default case; worst when detection is wrong (no extension point) | ✅ Moderate — users may need to install a provider; errors explainable per provider | ✅✅ Zero-friction default — the UX ceiling Option 2 is measured against | ⛔ Worst — every package presents detection differently                | ⚠️ Poor for casual users (must know CUDA version, instruction sets, etc.); strong for users who already manage their environment carefully |
+| **C8 Missing detection** | ➖ N/A — detection is always present by construction | ✅ Falls back to null variant per RES-004; explainable                       | ✅ Provider auto-installed, so rarely missing; falls back to null variant per RES-004 when it cannot be fetched | ⚠️ Falls back per package; behavior varies                             | ✅ Falls back to null variant if user has not declared values; explainable |
 
 ---
 
@@ -125,7 +127,7 @@ The matrix simplifies. Five nuances deserve narrative.
 
 Option 2 is the only option that satisfies SYS-007 (extensibility to future dimensions) without paying excessively on SYS-006 (bounded complexity for non-users) or on cross-package coordination (C6). Its costs concentrate on the trust model and are real but addressable — they are the subject of the SEC bucket, particularly SEC-002 (no new trust root), SEC-006 (no privilege escalation), and the explicit provider trust controls in PROV-003 and OV-003.
 
-Option 2a is rejected outright despite its unmatched C2 and C7 scores. It fails requirements that carry `must` priority — SEC-007 (no surprise code execution in a default-configured installer) and PROV-003 (the user can enumerate and disallow the providers that would run) — and no accumulation of advantages elsewhere in the matrix can compensate for failing a hard requirement. Its role in this analysis is calibration: it defines the UX ceiling that guardrail design should approach, and it makes the cost of each guardrail explicit rather than assumed.
+Option 2a is rejected outright despite its unmatched C2 and C7 scores. It fails two of the pass/fail gates defined in §Desirable properties — SEC-007 (no surprise code execution in a default-configured installer) and PROV-003 (the user can enumerate and disallow the providers that would run) — and gates are not tradeable against scores. Its role in this analysis is calibration: it defines the UX ceiling that guardrail design should approach, and it makes the cost of each guardrail explicit rather than assumed.
 
 Option 4 has the strongest trust profile and addresses a real existing constituency (HPC, locked-down corporate environments), but the C7 cost of requiring all users to declare their environment by hand is too high for the general case. The crucial observation is that Option 4-style usage is reachable as a *configuration* of Option 2: a user can disable providers via OV-003 and supply variant identity directly via OV-001 — with OV-004 guaranteeing that overrides work with no provider plugin installed at all — which gives them the no-detection-code experience Option 4 promises. Treating Option 4 as the default would force this UX on users who neither want nor need it; treating it as an opt-in path on top of Option 2 serves both constituencies.
 
@@ -150,12 +152,13 @@ The recommendation is contingent on the providers PEP carrying through on the ov
 - **The boundary between "external provider plugin" and "package shipping its own provider" is fuzzy** for packages that ship a single dominant variant axis. Worth a follow-up OA if the pattern becomes common.
 - **Option 4 as default vs as configuration is itself contestable.** The recommendation treats Option 4 as a reachable configuration of Option 2, but some reviewers may argue Option 4 should be the default for trust reasons, with provider-based detection as the opt-in. The matrix's C7 assessment is the main counter-argument; if the working group's read of the user base differs, the recommendation should be revisited.
 - **The Option 2 / Option 2a distinction may erode in practice.** If opt-in prompts are frequent enough, users will blanket-enable every provider, converging on Option 2a de facto while retaining its ceremony — the security-fatigue risk PEP 817 raises. This is the strongest argument for vendoring and allow-listing commonly used providers rather than prompting per provider: the guardrails only hold if the safe path is also the low-friction path.
+- **Property priorities are a first draft.** C4 in particular traces to no requirement, so its Medium weight is pure judgment. Re-weighting C3 (trust surface) to Critical is the coherent way to argue for Option 4 as the default — it gives the preceding Option-4-as-default bullet a concrete handle: that disagreement is about a weight, not about the scores.
 
 ---
 
 ## References
 
-- **Requirements:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004
+- **Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004 (see the [requirements register](../requirements.md))
 - **PEPs:** providers PEP (in drafting), [PEP 825](https://peps.python.org/pep-0825/) (data model context)
 - **Discourse:** [PEP 817 thread](https://discuss.python.org/t/pep-817-wheel-variants-beyond-platform-tags/105860)
 - **Related options analyses:** none yet. Further OAs will be added as load-bearing decisions are identified.
