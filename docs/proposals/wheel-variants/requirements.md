@@ -1,6 +1,6 @@
 # Wheel Variants — Requirements Register
 
-**Status:** Draft sketch · **Companion to:** the PEP 825 series (superseding PEP 817) · **Maintainers:** WheelNext working group
+**Status:** Draft sketch · **Companion to:** the Wheel Variants PEP series — PEP 817 (informational umbrella) plus PEP 825 and the Standards Track PEPs that follow · **Maintainers:** WheelNext working group
 
 ---
 
@@ -40,7 +40,7 @@ If a requirement here conflicts with a PEP, the PEP wins; please file an issue s
 
 - **End users / data scientists** — start with [System Requirements](#top-level-system-requirements), then [UX](#ux-user-experience) and [Override & Pinning](#ov-override-pinning).
 - **Package maintainers** — start with [Building](#bld-building), [Data Model](#dm-data-model), [Variant Providers](#prov-variant-providers).
-- **Installer and index maintainers** — start with [Resolution & Selection](#res-resolution-selection), [Installer Behavior](#inst-installer-behavior), [Indexing & Distribution](#idx-indexing-distribution).
+- **Installer and index maintainers** — start with [Resolution & Selection](#res-resolution-selection) and [Index Serving](#idx-index-serving).
 - **Security reviewers** — start with [Security & Trust](#sec-security-trust), then the [Provider](#prov-variant-providers) trust model.
 - **Steering / Packaging Council** — start with [System Requirements](#top-level-system-requirements) and the [PEP Allocation Matrix](#pep-allocation-matrix).
 
@@ -62,8 +62,7 @@ If a requirement here conflicts with a PEP, the PEP wins; please file an issue s
 | OV      | Override & Pinning            |
 | SEC     | Security & Trust              |
 | BLD     | Building                      |
-| IDX     | Indexing & Distribution       |
-| INST    | Installer Behavior            |
+| IDX     | Index Serving                 |
 | MIG     | Migration & Compatibility     |
 
 IDs are immutable once assigned, even if the requirement is later deferred or rejected. New requirements get the next free number in their bucket. When an existing requirement is split into more granular sub-requirements during drafting, the original ID is preserved with letter suffixes (e.g., DM-001 becomes DM-001a and DM-001b); this keeps earlier citations of the original ID resolvable to both successors.
@@ -260,6 +259,8 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **RES-005** — The selected variant identity is recordable in lockfiles in a portable form.
 - **RES-006** — Resolution caches variant decisions; cache invalidation rules are documented.
 - **RES-007** — When no compatible variant exists, the installer fails with a diagnosable error rather than silently installing nothing or installing something arbitrary.
+- **RES-008** — Variant selection occurs during dependency resolution, not as a post-resolution install-time step. *Rationale:* selection affects what gets installed; deferring it would split the resolution graph in two and break lockfiles. *Priority:* must.
+- **RES-009** — Mixed-awareness resolutions (some packages variant-aware, some not) are handled gracefully.
 
 ---
 
@@ -270,7 +271,7 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **Statement:** A user shall be able to ask the installer "why did you pick this variant?" and receive a human-readable answer that names the providers involved and the relevant environment facts.
 - **Rationale:** Without this, every variant-related bug report becomes archaeology.
 - **Priority:** must
-- **Verification:** `pip install --explain-variant` (or equivalent) exists and is documented.
+- **Verification:** `pip install --explain-variant` (or equivalent) exists and is documented; the variant decision is also visible without installing (e.g. in `--dry-run` output).
 
 ### Additional UX requirements (compact)
 
@@ -355,7 +356,7 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 
 ---
 
-## IDX — Indexing & Distribution
+## IDX — Index Serving
 
 ### IDX-001 — PEP 503 / 691 compatibility
 
@@ -369,22 +370,6 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 - **IDX-004** — A variant-unaware client served by a variant-aware index gets the non-variant wheel if one exists; otherwise no compatible wheel is found. Variant wheels are filtered out by ordinary filename verification (per PEP 825 §Backwards Compatibility). The null variant is not what unaware clients install — see MIG-002a.
 - **IDX-005** — A variant-aware client served by a variant-unaware index degrades to current behavior.
 - **IDX-006** — Index tooling shall guarantee consistency between the index-level variant metadata file (`{name}-{version}-variants.json`) and the variant metadata embedded in each variant wheel for the same `(name, version)`. *Rationale:* auditors and downstream tooling rely on the index-level file as a faithful summary of what the wheels actually declare; divergence between the two would silently break variant selection or hide variants from audit. *Allocation:* PEP 825 §Index-level metadata.
-
----
-
-## INST — Installer Behavior
-
-### INST-001 — Negotiation during resolution
-
-- **Statement:** Variant selection occurs during dependency resolution, not as a post-resolution install-time step.
-- **Rationale:** Selection affects what gets installed; deferring it splits the resolution graph in two and breaks lockfiles.
-- **Priority:** must
-
-### Additional INST requirements (compact)
-
-- **INST-002** — Installers cache variant decisions and document cache semantics.
-- **INST-003** — Partial variant availability (some packages variant-aware, some not) is handled gracefully.
-- **INST-004** — `--dry-run` shows the variant decision without installing.
 
 ---
 
@@ -413,7 +398,7 @@ The four-PEP sequence (per current plan):
 |-----------------------|------------------------------------------------|-----------------------------------------------|----------------------------------------------|
 | PEP 825 (data model)  | Wheel format, variant identity, metadata schema | DM-*, parts of MIG-*, parts of IDX-*          | —                                            |
 | PEP NNN (providers)   | Provider plugin model, trust, discovery        | PROV-*, parts of SEC-*                        | [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md) |
-| PEP NNN (UX/sec/maint)| User-facing behavior, audit, configuration     | UX-*, SEC-*, parts of INST-*, parts of RES-*  | —                                            |
+| PEP NNN (UX/sec/maint)| User-facing behavior, audit, configuration     | UX-*, SEC-*, parts of RES-*                   | —                                            |
 | PEP NNN (building)    | Build backend interface, variant production    | BLD-*                                         | —                                            |
 
 The *Informed by* column lists the [options analyses](./options-analyses/index.md) whose recommendations a PEP carries. An empty cell does not mean no analysis was done — it means no analysis was formal enough to warrant a standalone document. Most decisions live in the requirements doc's *Alternatives Considered* fields or in the PEPs' own *Rejected Alternatives* sections.

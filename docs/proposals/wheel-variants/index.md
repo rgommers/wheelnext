@@ -8,14 +8,15 @@ If you are landing here for the first time, the next three sections should orien
 
 ## What this is, in one minute
 
-Wheel Variants is the largest change to Python's binary distribution format in many years. It spans data model, plugin trust, dependency resolution, user experience, security, build tooling, indexing, and migration. Because of that scope, the design has been split across a sequence of PEPs:
+Wheel Variants is the largest change to Python's binary distribution format in many years. It spans data model, plugin trust, dependency resolution, user experience, security, build tooling, indexing, and migration. Because of that scope, the design has been split across a sequence of PEPs, under an informational umbrella:
 
+- **PEP 817** — Wheel Variants: Beyond Platform Tags (informational umbrella for the series)
 - **PEP 825** — Wheel Variants: Package Format (the data model)
 - a providers PEP (the plugin model that decides variant compatibility)
 - a UX / security / maintainability PEP
 - a building PEP (build backend interface)
 
-The PEPs are the **normative** specification. They are where decisions are recorded, and where the Packaging Council and the Steering Council will issue rulings.
+The Standards Track PEPs are the **normative** specification. They are where decisions are recorded, and where the Packaging Council and the Steering Council will issue rulings.
 
 This section is the **requirements layer**: an explicit, addressable record of what the design has to do and why, separate from how each PEP does it. For the handful of load-bearing design choices where the requirements alone cannot make the rationale legible, this section also hosts **options analyses** that work out the alternatives in detail. Both are companion artefacts to the PEPs, not replacements for them, and both exist to support the PEP process, not to route around it.
 
@@ -44,7 +45,7 @@ A requirements register addresses all four. It is also a familiar artifact: the 
    ├──────────────────────────────────┬───────────────────┤
    │   Subsystem requirements         │   Options         │   ← what the design must do,
    │   DM · PROV · RES · UX · OV ·    │   analyses        │     and the load-bearing
-   │   SEC · BLD · IDX · INST · MIG   │   (OA-*)          │     "why this option"
+   │   SEC · BLD · IDX · MIG          │   (OA-*)          │     "why this option"
    ├──────────────────────────────────┴───────────────────┤
    │   PEPs                                                │   ← how it is specified
    │   825  ·  Providers  ·  UX/Sec  ·  Build             │     (normative)
@@ -77,7 +78,7 @@ Different readers want different doors into the design. Pick the one that fits.
 
 - **End users and data scientists** — start with the [System Requirements](./requirements.md#top-level-system-requirements), then [UX](./requirements.md#ux-user-experience) and [Override & Pinning](./requirements.md#ov-override-pinning). You are looking for: what will change for you, and what escape hatches exist.
 - **Package maintainers** — start with [Building](./requirements.md#bld-building), [Data Model](./requirements.md#dm-data-model), and [Variant Providers](./requirements.md#prov-variant-providers). You are looking for: what you will declare, in what file, and how it ends up in a wheel.
-- **Installer and index maintainers** — start with [Resolution & Selection](./requirements.md#res-resolution-selection), [Installer Behavior](./requirements.md#inst-installer-behavior), and [Indexing & Distribution](./requirements.md#idx-indexing-distribution). For the provider mechanism choice specifically, see [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md).
+- **Installer and index maintainers** — start with [Resolution & Selection](./requirements.md#res-resolution-selection) and [Index Serving](./requirements.md#idx-index-serving). For the provider mechanism choice specifically, see [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md).
 - **Security reviewers** — start with [Security & Trust](./requirements.md#sec-security-trust), then the [Provider](./requirements.md#prov-variant-providers) trust model, and read [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md) for the trust-surface analysis behind the provider choice.
 - **Steering and Packaging Council members** — start with [System Requirements](./requirements.md#top-level-system-requirements) and the [PEP Allocation Matrix](./requirements.md#pep-allocation-matrix). For the headline design choice (provider mechanism), see [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md).
 
@@ -111,11 +112,11 @@ A few things worth being explicit about, because both the requirements doc and t
 
 | PEP                              | Scope                                          | Status                             |
 |----------------------------------|------------------------------------------------|------------------------------------|
+| [PEP 817](https://peps.python.org/pep-0817/) | Informational umbrella for the series          | Under discussion                   |
 | [PEP 825](https://peps.python.org/pep-0825/) | Wheel Variants: Package Format (data model)    | Under discussion                   |
 | Providers (draft)                | Provider plugin model, trust, discovery        | In drafting                        |
 | UX / Security / Maintainability (draft) | User-facing behavior, audit, configuration  | In drafting                        |
 | Building (draft)                 | Build backend interface                        | In drafting                        |
-| [PEP 817](https://peps.python.org/pep-0817/) | Original umbrella proposal                     | Superseded by the four-PEP sequence above |
 
 Reference implementations, prototype installers, and provider examples live in the [wheelnext GitHub organization](https://github.com/wheelnext).
 
