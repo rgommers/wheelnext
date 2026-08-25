@@ -37,7 +37,12 @@ nav:
       - "Native Library Loader": "proposals/pepxxx_native_lib_loader.md"
       - "Symlink Support in Wheel": "proposals/pep778_symlink_support.md"
       - "Upload 2.0 API for Python Package Indexes": "proposals/pep694_upload_api.md"
-      - "Wheel Variants": "proposals/wheel-variants/index.md"
+      - "Wheel Variants":
+          - "Overview": "proposals/wheel-variants/index.md"
+          - "Requirements": "proposals/wheel-variants/requirements.md"
+          - "Options Analyses":
+              - "Index": "proposals/wheel-variants/options-analyses/index.md"
+              - "OA-001 Variant Compatibility Mechanism": "proposals/wheel-variants/options-analyses/oa-001-variant-compatibility-mechanism.md"
   - "WheelNext Summits":
       - "2025 Summit":
           - "Welcome !": "summits/2025_03/index.md"
@@ -71,7 +76,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-      toc_depth: 2
+      toc_depth: 3
 
 extra:
   social:

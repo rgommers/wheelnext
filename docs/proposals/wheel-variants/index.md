@@ -100,7 +100,7 @@ A few things worth being explicit about, because both the requirements doc and t
 ## How it evolves
 
 - **Source of truth:** this site is built from a markdown source tree in the [wheelnext.dev repository](https://github.com/wheelnext/wheelnext.dev). All changes go through pull request review by the WheelNext working group.
-- **Requirement and OA IDs are permanent.** Once a requirement or options analysis has an ID (`REQ-PROV-007`, `OA-001`), it keeps that ID — even if the content is later deferred, rejected, or superseded. This is so external references (in PEPs, threads, lockfiles, postmortems) stay valid.
+- **Requirement and OA IDs are permanent.** Once a requirement or options analysis has an ID (`PROV-007`, `OA-001`), it keeps that ID — even if the content is later deferred, rejected, or superseded. This is so external references (in PEPs, threads, lockfiles, postmortems) stay valid.
 - **Status, not deletion.** A rejected requirement or a superseded analysis is marked accordingly with a rationale, rather than removed. The history of what was considered and why is part of what makes this useful to later reviewers.
 - **Provenance is recorded.** When a requirement or analysis traces to a specific Discourse thread, issue, or stakeholder, the source is linked. New items without a clear source are still accepted, but the field is filled in as discussions surface.
 - **Allocation can change.** Where a requirement lands in the PEP sequence is itself a decision that can be revisited; see the [Open Allocation Questions](./requirements.md#open-allocation-questions) section. Options analyses can likewise be revisited if the underlying requirements change.
