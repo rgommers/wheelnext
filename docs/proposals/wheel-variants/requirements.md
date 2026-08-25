@@ -86,7 +86,7 @@ Filing rule: every requirement has **one home bucket**. Related concerns in othe
 
 Full entries are written out because they are load-bearing — hence their priorities are overwhelmingly `must`. Compact entries carry an inline *Priority* annotation only where one has been assigned; an unannotated compact entry has not yet been prioritized.
 
-A small number of representative requirements below are written out in full. Most are listed compactly; the full entries live in the per-bucket detail pages of the site.
+Requirements are written out in full when they become decision-relevant; the rest are listed compactly. This page is the single home of every requirement — there are no separate detail pages.
 
 ---
 
