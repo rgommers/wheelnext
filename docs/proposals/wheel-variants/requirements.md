@@ -262,6 +262,7 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **RES-007** — When no compatible variant exists, the installer fails with a diagnosable error rather than silently installing nothing or installing something arbitrary.
 - **RES-008** — Variant selection occurs during dependency resolution, not as a post-resolution install-time step. *Rationale:* selection affects what gets installed; deferring it would split the resolution graph in two and break lockfiles. *Priority:* must.
 - **RES-009** — Mixed-awareness resolutions (some packages variant-aware, some not) are handled gracefully.
+- **RES-010** — Resolution-time cost for *variant users* is bounded: per package, variant selection adds only the index-level metadata fetch (small and cacheable, IDX-002; never wheel payloads, DM-003) and a bounded number of provider invocations, with results cached per environment (RES-006). Complements SYS-006, which bounds the cost for non-users. *Rationale:* the packages this feature serves are the largest on PyPI; trading download pain for resolution pain would forfeit the win. *Priority:* should.
 
 ---
 
