@@ -1,7 +1,7 @@
 # OA-001 — Variant Compatibility Mechanism
 
 **Status:** Draft · **Decision target:** Providers PEP · **Date:** 2026-05-23
-**Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004
+**Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-001, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004, OV-005, OV-007
 
 ---
 
@@ -9,7 +9,7 @@
 
 This analysis evaluates four structurally distinct ways to determine, at install time, which wheel variants are compatible with the current environment, plus one policy variant of the recommended option (Option 2a: provider plugins with no security guardrails). The choice constrains the rest of the providers PEP and has multi-year consequences for who maintains accelerator-specific code, how quickly new hardware reaches users, and where trust boundaries sit.
 
-**Recommendation:** Option 2 — external provider plugins — for the general case. Option 4 (user-declared environment, no detection code) is reachable as a configuration of Option 2 via the override controls in OV-001/OV-003/OV-004, which makes it available to trust-conscious and HPC environments without requiring it as the default. Option 2a — the same plugin architecture with every named provider run automatically — is rejected outright: it fails hard `must` requirements (SEC-007, PROV-003) regardless of how well it scores elsewhere in the matrix. The other two alternatives either freeze the design at today's hardware landscape (Option 1) or scatter compatibility logic across every package that ships variants (Option 3).
+**Recommendation:** Option 2 — external provider plugins — for the general case. Option 4 (user-declared environment, no detection code) is affirmatively provided for as a configuration of Option 2: via the override controls in OV-001/OV-003/OV-004, and via a first-class static environment file (OV-007; format expected to be standardized in a future PEP) that is independently needed for deterministic cross-target builds. This makes the no-detection-code mode available to trust-conscious and HPC environments without requiring it as the default. Option 2a — the same plugin architecture with every named provider run automatically — is rejected outright: it fails hard `must` requirements (SEC-007, PROV-003) regardless of how well it scores elsewhere in the matrix. The other two alternatives either freeze the design at today's hardware landscape (Option 1) or scatter compatibility logic across every package that ships variants (Option 3).
 
 ---
 
@@ -84,7 +84,7 @@ Requirements with `must` priority act as pass/fail gates, not weights: an option
 | C7 | User-facing simplicity and explainability                                     | Critical | UX-001               |
 | C8 | Degradation when relevant detection code is missing                           | Medium   | RES-004, RES-007     |
 
-The weights are consistent with the recommendation's revealed preferences: C1 and C7 are Critical because they are what the recommendation turns on (C1 disqualifies Option 1; C7 is the argument against Option 4 as default). C3 is Critical as well: reviewer response made clear that resolution-time code execution is a hard no for a substantial constituency — the breadth of the reaction to Option 2a is the evidence — not one concern among several. That makes the central tension of this analysis explicit: the recommended option scores only mixed on a Critical property, and survives because the gates (SEC-007, PROV-003) plus the mitigations in Option 2's trust model bound the exposure. If those mitigations are weakened, the Critical weight is precisely why the recommendation must be revisited in Option 4's favor (see the contingency note in §Recommendation). C8 is Medium because the `must` requirements behind it guarantee every surviving option an acceptable fallback, so it barely differentiates.
+The weights are consistent with the recommendation's revealed preferences: C1 and C7 are Critical because they are what the recommendation turns on (C1 disqualifies Option 1; C7 is the argument against Option 4 as default). C3 is Critical as well: reviewer response made clear that resolution-time code execution is a hard no for a substantial constituency — the breadth of the reaction to Option 2a is the evidence — not one concern among several. That makes the central tension of this analysis explicit: the recommended option scores only mixed on a Critical property, and survives because the gates (SEC-007, PROV-003) plus the mitigations in Option 2's trust model bound the exposure. If those mitigations are weakened, the Critical weight is precisely why the recommendation must be revisited in Option 4's favor (see the contingency note in §Recommendation) — and, because the design affirmatively provides the Option 4 mode for those who reject resolution-time execution entirely, a hard-no reviewer is not asked to accept Option 2's trust profile, only to tolerate its availability as the default for others. C8 is Medium because the `must` requirements behind it guarantee every surviving option an acceptable fallback, so it barely differentiates.
 
 ---
 
@@ -129,9 +129,13 @@ Option 2 is the only option that satisfies SYS-007 (extensibility to future dime
 
 Option 2a is rejected outright despite its unmatched C2 and C7 scores. It fails two of the pass/fail gates defined in §Desirable properties — SEC-007 (no surprise code execution in a default-configured installer) and PROV-003 (the user can enumerate and disallow the providers that would run) — and gates are not tradeable against scores. Its role in this analysis is calibration: it defines the UX ceiling that guardrail design should approach, and it makes the cost of each guardrail explicit rather than assumed.
 
-Option 4 has the strongest trust profile and addresses a real existing constituency (HPC, locked-down corporate environments), but the C7 cost of requiring all users to declare their environment by hand is too high for the general case. The crucial observation is that Option 4-style usage is reachable as a *configuration* of Option 2: a user can disable providers via OV-003 and supply variant identity directly via OV-001 — with OV-004 guaranteeing that overrides work with no provider plugin installed at all — which gives them the no-detection-code experience Option 4 promises. Treating Option 4 as the default would force this UX on users who neither want nor need it; treating it as an opt-in path on top of Option 2 serves both constituencies.
+Option 4 has the strongest trust profile and addresses a real existing constituency (HPC, locked-down corporate environments), but the C7 cost of requiring all users to declare their environment by hand is too high for the general case. The crucial observation is that Option 4-style usage is reachable as a *configuration* of Option 2: a user can disable providers via OV-003 and supply variant identity directly via OV-001 — with OV-004 guaranteeing that overrides work with no provider plugin installed at all — which gives them the no-detection-code experience Option 4 promises.
 
-The recommendation is contingent on the providers PEP carrying through on the override and disable controls (OV-001, OV-003, OV-004, PROV-003). If they are weakened during drafting, the Option 4-as-configuration argument collapses and the recommendation should be revisited.
+This is not left as a theoretical configuration; the design affirmatively provides for it. The recommendation is that installers add UX to accept a static file declaring an environment's variant-relevant properties (OV-007 makes this a first-class mechanism, not a hack; the file format is expected to be standardized in a future PEP), and/or UX for selecting individual variant features directly (extending OV-001-style pinning from whole variants to per-feature choices). Crucially, the static file is not merely a trust accommodation: it is independently required for deterministic selection whenever the install target is not the machine running the installer — building container images for other hardware, populating wheelhouses, lockfile-driven rebuilds in CI (RES-001, OV-005). Because mainstream workflows depend on it, the Option 4 path will exist and be maintained regardless of how many users choose it for trust reasons — it cannot become a neglected side door.
+
+Treating Option 4 as the default would force its UX on users who neither want nor need it; treating it as a supported path on top of Option 2 serves both constituencies.
+
+The recommendation is contingent on the providers PEP (and the future static-file PEP) carrying through on the override and disable controls and the static declaration path (OV-001, OV-003, OV-004, OV-007, PROV-003). If they are weakened during drafting, the Option 4-as-configuration argument collapses and the recommendation should be revisited.
 
 ---
 
@@ -158,7 +162,7 @@ The recommendation is contingent on the providers PEP carrying through on the ov
 
 ## References
 
-- **Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004 (see the [requirements register](../requirements.md))
+- **Traces to:** SYS-006, SYS-007, SYS-008, PROV-001, PROV-002, PROV-003, PROV-009, SEC-002, SEC-006, SEC-007, RES-001, RES-003, RES-004, RES-007, UX-001, OV-001, OV-003, OV-004, OV-005, OV-007 (see the [requirements register](../requirements.md))
 - **PEPs:** providers PEP (in drafting), [PEP 825](https://peps.python.org/pep-0825/) (data model context)
 - **Discourse:** [PEP 817 thread](https://discuss.python.org/t/pep-817-wheel-variants-beyond-platform-tags/105860)
 - **Related options analyses:** none yet. Further OAs will be added as load-bearing decisions are identified.
