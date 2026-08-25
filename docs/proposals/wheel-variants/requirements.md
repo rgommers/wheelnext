@@ -188,7 +188,7 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **Statement:** Variant compatibility shall be determined by named, versioned "provider" plugins, each owning one or more axes of the variant space.
 - **Rationale:** The set of relevant hardware/feature dimensions is open-ended (SYS-007). Hard-coding detection logic into installers would freeze the design.
 - **Priority:** must
-- **Analysis:** See [OA-001 — Variant Compatibility Mechanism](./options-analyses/oa-001-variant-compatibility-mechanism.md) for the full options analysis behind this choice, including the alternatives considered (installer-hardcoded logic, per-package detection, and user-declared environments with declarative markers) and the trade-offs that led to the typed-provider recommendation.
+- **Analysis:** See [OA-001 — Variant Compatibility Mechanism](./options-analyses/oa-001-variant-compatibility-mechanism.md) for the full options analysis behind this choice, including the alternatives considered (PEP-specified markers with installer-implemented detection, per-package detection, and user-declared environments with declarative markers) and the trade-offs that led to the typed-provider recommendation.
 
 ### PROV-002 — Provider discoverability without code execution at index time
 
