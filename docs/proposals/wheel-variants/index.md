@@ -66,7 +66,7 @@ A small number of design choices in this project are too consequential to be set
 
 For these, this section hosts **options analyses**: bounded, structured documents that lay out the alternatives, weigh them against criteria drawn from the requirements, recommend one, and record dissent. Each analysis has a stable ID (`OA-001`, `OA-002`, …) so it can be cited from PEP threads and review comments.
 
-We expect somewhere between four and six options analyses for the full PEP series. Medium-importance design choices live inside the requirements doc's *Alternatives Considered* fields; small ones stay in the PEPs' own *Rejected Alternatives* sections. The discipline matters: an options analysis is a deliberate, considered artefact, not the default container for every design question.
+We expect somewhere between four and six options analyses for the full PEP series. Smaller design choices are worked through in the PEPs' own *Rejected Alternatives* sections, linked from the relevant requirement's *Analysis* field (or grow into a small options analysis if they cross PEPs). The discipline matters: an options analysis is a deliberate, considered artefact, not the default container for every design question.
 
 Like the requirements doc, options analyses are non-normative. They record the analysis that supports a decision; the decision itself is made through the PEP process.
 
@@ -159,7 +159,7 @@ Yes — that is what the IDs are for. `OV-001`, `SEC-003`, `PROV-002`, `OA-001` 
 A requirement says *what must be true* (e.g. "the system shall be extensible to new accelerator dimensions"). An options analysis says *given the requirements, here are several ways to satisfy them, here is how each one trades off against the others, and here is the recommendation*. Requirements live in the [requirements doc](./requirements.md); options analyses live in [their own section](./options-analyses/index.md) and each gets its own page. An options analysis cites the requirements it weighs.
 
 **When does a decision get an options analysis rather than just a line in the PEP?**
-Only the small number of load-bearing decisions — the ones whose consequences are large, whose alternatives have non-obvious trade-offs, and which the community would reasonably want to see analysed before the PEP is finalised. Medium-importance design choices live inside the requirements doc's *Alternatives Considered* field. Small ones stay in the PEP's *Rejected Alternatives* section. Four to six options analyses across the full PEP series is the expected scale.
+Only the small number of load-bearing decisions — the ones whose consequences are large, whose alternatives have non-obvious trade-offs, and which the community would reasonably want to see analysed before the PEP is finalised. Smaller design choices are worked through in the PEP's own *Rejected Alternatives* section, linked from the relevant requirement's *Analysis* field; a choice that crosses PEPs can grow into a small options analysis. Four to six options analyses across the full PEP series is the expected scale.
 
 ---
 

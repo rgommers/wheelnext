@@ -31,7 +31,7 @@ This is the **requirements layer** for the Wheel Variants work. It is *not* a no
 
 1. Make the *intent* of the design explicit and addressable, separate from the *mechanism* (which lives in the PEPs).
 2. Give reviewers, stakeholders, and the Packaging Council a single map of the whole problem, so per-PEP discussions can be anchored to shared requirements rather than re-litigated each time.
-3. Record *alternatives considered and why rejected*, tied to the requirements that motivated the decision. For load-bearing design choices whose alternatives need more than an inline note, the analysis lives in a companion [options analysis](./options-analyses/index.md), cited from the relevant requirements.
+3. Keep *alternatives considered and why rejected* findable, tied to the requirements that motivated the decision: a requirement's *Analysis* field links to where the alternatives are worked through — a PEP's *Rejected Alternatives* section, or, for load-bearing design choices, a companion [options analysis](./options-analyses/index.md).
 4. Make it visible which requirements are allocated to which PEP, which are deferred, and which are still open.
 
 If a requirement here conflicts with a PEP, the PEP wins; please file an issue so we can reconcile.
@@ -69,17 +69,20 @@ IDs are immutable once assigned, even if the requirement is later deferred or re
 
 ### Requirement template
 
-Each requirement has the following fields (some optional):
+Only **Statement**, **Rationale**, and **Priority** are expected on every fully written-out requirement; the remaining fields are optional and appear where they earn their place.
 
 - **Statement** — a single sentence in "shall" form; the "shall" addresses the design effort, not tool implementers.
 - **Rationale** — why this matters.
-- **Source** — where the requirement originated (Discourse thread, issue, stakeholder).
-- **Allocation** — which PEP currently carries this, or `unallocated`.
 - **Priority** — `must`, `should`, or `may`: how critical the requirement is to the effort's success. These are not RFC 2119 keywords.
+- **Traces to** — the system goal (SYS-*) or more general requirement this entry refines.
+- **Allocation** — which PEP currently carries this, or `unallocated`. The [PEP allocation matrix](#pep-allocation-matrix) is authoritative at bucket level; this field adds PEP-section detail.
 - **Status** — `proposed`, `accepted`, `deferred`, `rejected`, `superseded`.
-- **Verification** — how we will know it is met (test, review, prototype, deployment evidence).
-- **Dependencies** — other requirement IDs this builds on or conflicts with.
-- **Alternatives considered** — designs rejected, with one-line rationale each.
+- **Source** — where the requirement originated (Discourse thread, issue, stakeholder).
+- **Verification** — how we will know the requirement is met (benchmark, conformance test, prototype, deployment evidence). Used where verification is non-obvious; absence means the default of verification by review of the realized design.
+- **Dependencies** — peer requirement IDs this genuinely depends on; conflicts, on the rare occasions they exist, are called out explicitly as such. Refinement of a more general requirement belongs in *Traces to*, not here.
+- **Analysis** — a link to the options analysis or PEP section that works through the related design choice. Design content — including rejected alternatives — lives there, not here.
+
+Filing rule: every requirement has **one home bucket**. Related concerns in other buckets cross-reference it by ID rather than restating it.
 
 A small number of representative requirements below are written out in full. Most are listed compactly; the full entries live in the per-bucket detail pages of the site.
 
@@ -148,7 +151,7 @@ These are the high-level commitments the whole design is accountable to. Every l
 - **Rationale:** Provider plugins are code. Distributing them through any channel other than the existing package-distribution channel multiplies the trust surface and the supply-chain blast radius.
 - **Priority:** must
 - **Allocation:** PEP for providers
-- **Dependencies:** SEC-002
+- **Note:** refined for provider distribution by SEC-002.
 
 ---
 
@@ -170,9 +173,7 @@ The shape of the wheel file, the variant metadata, and how variants are identifi
 - **Rationale:** Encoding properties in the filename would either require very long filenames (problematic on Windows and some filesystems) or impose arbitrary limits on property counts, making the format unsuitable for multidimensional compatibility matrices. PEP 825 §Rejected Ideas → "Predictable variant labels" engages this trade-off and rejects the encode-in-filename design for these reasons.
 - **Priority:** must
 - **Allocation:** PEP 825 §Variant label, §Variant metadata, §Index-level metadata
-- **Alternatives considered:**
-  - *Properties encoded directly in the variant label.* Rejected per PEP 825 §Rejected Ideas: forces either unbounded filenames or arbitrary property-count limits.
-  - *Properties as a hash of the property set.* Rejected per PEP 825 §Rejected Ideas: opaque labels are harder to read and reason about than human-chosen labels.
+- **Analysis:** PEP 825 §Rejected Ideas ("Predictable variant labels") works through the rejected alternatives — properties encoded directly in the label, and properties as a hash of the property set.
 
 ### DM-002 — Variant metadata schema
 
@@ -215,10 +216,8 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **Statement:** Determining which providers a wheel needs shall not require executing arbitrary code at index-query time.
 - **Rationale:** Index queries happen frequently, sometimes against untrusted indices, and often in environments (CI runners, locked-down hosts) where executing third-party code is unacceptable.
 - **Priority:** must
-- **Dependencies:** SEC-001
-- **Alternatives considered:**
-  - *Provider executes during index parsing.* Rejected: arbitrary code execution against untrusted index data.
-  - *Provider declared in wheel METADATA, executed only after wheel candidate selection.* Accepted.
+- **Traces to:** SEC-001
+- **Analysis:** the accepted design — provider declared in wheel metadata, executed only after wheel-candidate selection, never at index-query time — and the rejected execute-during-index-parsing alternative are worked through in [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md) and the providers PEP draft.
 
 ### PROV-003 — Provider trust model is explicit
 
@@ -265,6 +264,8 @@ The plugin model that decides whether a given variant is compatible with the cur
 ---
 
 ## UX — User Experience
+
+Boundary with [OV](#ov-override-pinning): UX covers *observing and understanding* variant behavior; OV covers *controlling* it.
 
 ### UX-001 — Explainable selection
 
@@ -314,13 +315,13 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 
 - **Statement:** Index-time variant filtering shall not require executing untrusted code.
 - **Priority:** must
-- **Dependencies:** PROV-002
+- **Note:** refined for provider discovery by PROV-002.
 
 ### SEC-002 — No new trust root
 
 - **Statement:** Provider plugin distribution shall use the same trust model as ordinary package distribution.
 - **Priority:** must
-- **Dependencies:** SYS-008
+- **Traces to:** SYS-008
 
 ### SEC-003 — Squatting resistance
 
@@ -401,13 +402,17 @@ The four-PEP sequence (per current plan):
 | PEP NNN (UX/sec/maint)| User-facing behavior, audit, configuration     | UX-*, SEC-*, parts of RES-*                   | —                                            |
 | PEP NNN (building)    | Build backend interface, variant production    | BLD-*                                         | —                                            |
 
-The *Informed by* column lists the [options analyses](./options-analyses/index.md) whose recommendations a PEP carries. An empty cell does not mean no analysis was done — it means no analysis was formal enough to warrant a standalone document. Most decisions live in the requirements doc's *Alternatives Considered* fields or in the PEPs' own *Rejected Alternatives* sections.
+The *Informed by* column lists the [options analyses](./options-analyses/index.md) whose recommendations a PEP carries. An empty cell does not mean no analysis was done — it means no analysis was formal enough to warrant a standalone document. Most decisions live in the PEPs' own *Rejected Alternatives* sections, linked from the relevant requirement's *Analysis* field.
 
 Cross-cutting buckets:
 
 - **SYS-*** — umbrella, not allocated to any single PEP.
 - **RES-*** — split between the providers PEP (mechanism) and the UX/sec/maint PEP (policy and surfacing).
 - **OV-*** — currently unallocated; see below.
+
+Cross-cutting threads — single topics that span several buckets, listed here so they stay visible as threads:
+
+- **Lockfiles** — RES-005, OV-005, PROV-009, UX-003, MIG-005.
 
 ### Open allocation questions
 
@@ -424,7 +429,7 @@ Documented here so reviewers can see what we have *not* yet decided, rather than
 - **proposed** — author group has written it down; not yet socialized.
 - **accepted** — reflected in current PEP draft or implementation.
 - **deferred** — accepted in principle, not in scope for the current PEP series.
-- **rejected** — considered and decided against (with rationale in *Alternatives considered*).
+- **rejected** — considered and decided against, with the rationale recorded in the entry.
 - **superseded** — replaced by another requirement (cross-link).
 
 ---
