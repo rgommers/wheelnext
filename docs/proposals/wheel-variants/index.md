@@ -1,6 +1,6 @@
 # Wheel Variants — Requirements
 
-This section of wheelnext.dev documents the **requirements** underlying the wheel variants PEP series. It is a companion to the PEPs, not a replacement for them.
+This section of wheelnext.dev documents the **requirements on the design** underlying the wheel variants PEP series — what the design must achieve, not implementation requirements for tools (those live in the PEPs). It is a companion to the PEPs, not a replacement for them.
 
 If you are landing here for the first time, the next three sections should orient you in about five minutes.
 
@@ -32,7 +32,7 @@ In practice that has produced four recurring problems on the discussion threads:
 3. **Stakeholders cannot find their slice.** A security reviewer, a build-backend maintainer, and a data scientist all need different entry points into the design. The PEPs are linear documents; they cannot serve all three.
 4. **Cross-cutting concerns lose their home.** Override and pinning, for example, could legitimately live in three different PEPs. Without a requirements layer, the decision becomes a process argument rather than a design one.
 
-A requirements specification addresses all four. It is also a familiar artifact: the engineers and program managers funding this work at NVIDIA, Astral, Red Hat, Meta, Quansight, Intel, AMD, Huawei, and elsewhere recognize it from their own day jobs.
+A requirements register addresses all four. It is also a familiar artifact: the engineers and program managers funding this work at NVIDIA, Astral, Red Hat, Meta, Quansight, Intel, AMD, Huawei, and elsewhere recognize it from their own day jobs — where the distinction it embodies is called *performance requirements* (what the system must accomplish; nothing to do with speed) versus *design requirements* (how it is built, which here is the PEPs' territory).
 
 ---
 
@@ -81,7 +81,7 @@ Different readers want different doors into the design. Pick the one that fits.
 - **Security reviewers** — start with [Security & Trust](./requirements.md#sec-security-trust), then the [Provider](./requirements.md#prov-variant-providers) trust model, and read [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md) for the trust-surface analysis behind the provider choice.
 - **Steering and Packaging Council members** — start with [System Requirements](./requirements.md#top-level-system-requirements) and the [PEP Allocation Matrix](./requirements.md#pep-allocation-matrix). For the headline design choice (provider mechanism), see [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md).
 
-The full requirements document: **[Requirements Specification](./requirements.md)**.
+The full requirements document: **[Requirements Register](./requirements.md)**.
 The options analyses index: **[Options Analyses](./options-analyses/index.md)**.
 
 ---
@@ -134,7 +134,10 @@ Further analyses will be added as load-bearing decisions are identified. The exp
 ## Frequently asked
 
 **Is this section the specification?**
-No. The PEPs are normative. This section is a companion artifact that records the requirements the PEPs are designed against.
+No. The PEPs are normative. This section is a companion artifact that records the requirements the PEPs are designed against — requirements *on* the design, not requirements *in* the design.
+
+**The requirements say "shall" and "must" — are tools required to follow them?**
+No. Nothing on this site binds any tool. The "shall" in a requirement's Statement addresses the design effort — it is the working group holding itself accountable for an outcome — and the `must`/`should`/`may` in the Priority field ranks how critical a requirement is, deliberately *not* in the RFC 2119 sense. When a requirement is realised, the corresponding normative MUST for implementers appears in a PEP, and only there.
 
 **Where do I discuss a requirement I disagree with?**
 On the relevant Discourse thread, linked from the requirement's *Source* field. If the requirement does not yet have a thread, open an issue in [python/peps](https://github.com/python/peps) on the relevant PEP, or in the WheelNext repo for cross-cutting concerns. Discussion on this site happens via pull request review; substantive design debate happens on Discourse.

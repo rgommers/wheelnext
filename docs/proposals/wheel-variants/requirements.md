@@ -1,8 +1,29 @@
-# Wheel Variants — Requirements Specification
+# Wheel Variants — Requirements Register
 
 **Status:** Draft sketch · **Companion to:** the PEP 825 series (superseding PEP 817) · **Maintainers:** WheelNext working group
 
 ---
+
+!!! note "Which kind of “requirements”?"
+
+    In packaging discussions, "requirements" usually means normative obligations on
+    implementers — the RFC 2119 MUST/SHOULD/MAY language of a spec. **That is not what
+    this document is.** Nothing here binds any tool.
+
+    The entries in this register are *requirements on the design*, not requirements *in*
+    the design: the outcomes — capability, usability, security, maintainability,
+    compatibility — that the finished design must achieve, and how we would verify that
+    it does. The PEPs make the design choices that meet them, and the PEPs alone carry
+    normative language for implementers. (Systems engineering calls these two kinds
+    *performance requirements* and *design requirements* — where "performance" means
+    what the system must accomplish, not how fast it runs.)
+
+    Two consequences for reading this document:
+
+    - The "shall" in each Statement addresses the design effort — the working group
+      holding itself accountable — not tool authors.
+    - The Priority field (`must`/`should`/`may`) ranks how critical a requirement is to
+      the effort's success. It is not RFC 2119 vocabulary.
 
 ## How to read this document
 
@@ -51,11 +72,11 @@ IDs are immutable once assigned, even if the requirement is later deferred or re
 
 Each requirement has the following fields (some optional):
 
-- **Statement** — a single sentence in "shall" form.
+- **Statement** — a single sentence in "shall" form; the "shall" addresses the design effort, not tool implementers.
 - **Rationale** — why this matters.
 - **Source** — where the requirement originated (Discourse thread, issue, stakeholder).
 - **Allocation** — which PEP currently carries this, or `unallocated`.
-- **Priority** — `must`, `should`, or `may`.
+- **Priority** — `must`, `should`, or `may`: how critical the requirement is to the effort's success. These are not RFC 2119 keywords.
 - **Status** — `proposed`, `accepted`, `deferred`, `rejected`, `superseded`.
 - **Verification** — how we will know it is met (test, review, prototype, deployment evidence).
 - **Dependencies** — other requirement IDs this builds on or conflicts with.
@@ -430,6 +451,7 @@ Documented here so reviewers can see what we have *not* yet decided, rather than
 - **Provider** — a plugin owning one or more variant axes, responsible for determining compatibility between a variant value and the current environment.
 - **Axis** — a single dimension along which variants differ (e.g. `cuda_major`, `cpu_features`, `blas`).
 - **Override** — a user instruction that bypasses or constrains automatic variant selection.
+- **Requirement (as used here)** — a requirement *on* the design (an outcome it must achieve), not a requirement *in* the design (a normative obligation on tools). The latter live in the PEPs.
 
 ---
 
