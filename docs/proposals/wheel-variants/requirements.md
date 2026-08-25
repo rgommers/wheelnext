@@ -84,6 +84,8 @@ Only **Statement**, **Rationale**, and **Priority** are expected on every fully 
 
 Filing rule: every requirement has **one home bucket**. Related concerns in other buckets cross-reference it by ID rather than restating it.
 
+Full entries are written out because they are load-bearing — hence their priorities are overwhelmingly `must`. Compact entries carry an inline *Priority* annotation only where one has been assigned; an unannotated compact entry has not yet been prioritized.
+
 A small number of representative requirements below are written out in full. Most are listed compactly; the full entries live in the per-bucket detail pages of the site.
 
 ---
@@ -256,7 +258,7 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **RES-003** — Variant selection coordinates across packages in a resolution (e.g. consistent CUDA major version across dependent libraries).
 - **RES-004** — A null-variant fallback is always considered when no specific variant matches.
 - **RES-005** — The selected variant identity is recordable in lockfiles in a portable form.
-- **RES-006** — Resolution caches variant decisions; cache invalidation rules are documented.
+- **RES-006** — Resolution caches variant decisions; cache invalidation rules are documented. *Priority:* should.
 - **RES-007** — When no compatible variant exists, the installer fails with a diagnosable error rather than silently installing nothing or installing something arbitrary.
 - **RES-008** — Variant selection occurs during dependency resolution, not as a post-resolution install-time step. *Rationale:* selection affects what gets installed; deferring it would split the resolution graph in two and break lockfiles. *Priority:* must.
 - **RES-009** — Mixed-awareness resolutions (some packages variant-aware, some not) are handled gracefully.
@@ -276,10 +278,10 @@ Boundary with [OV](#ov-override-pinning): UX covers *observing and understanding
 
 ### Additional UX requirements (compact)
 
-- **UX-002** — Variant choice is surfaced in normal install output (succinctly), not hidden behind a flag.
+- **UX-002** — Variant choice is surfaced in normal install output (succinctly), not hidden behind a flag. *Priority:* should.
 - **UX-003** — Lockfile entries for variant packages are unambiguous to a human reader.
 - **UX-004** — Error messages distinguish "no variant of X matches your environment" from "X is not available."
-- **UX-005** — Documentation provides per-stakeholder onboarding (this site is part of the answer).
+- **UX-005** — Documentation provides per-stakeholder onboarding (this site is part of the answer). *Priority:* should.
 - **UX-006** — Variant identifiers in user-facing output are stable strings that can be copy-pasted into override flags.
 
 ---
@@ -304,7 +306,7 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 - **OV-003** — User can disable specific providers without uninstalling them.
 - **OV-004** — Overrides do not require any provider plugin to be installed.
 - **OV-005** — Overrides are encodable in lockfiles.
-- **OV-006** — Overrides at the project level (pyproject.toml / requirements file) and at the invocation level (CLI flag) are both supported; precedence is documented.
+- **OV-006** — When multiple override sources apply (CLI flag, static environment file, lockfile), their precedence is documented. *Priority:* should.
 - **OV-007** — Static override metadata (e.g. a JSON file declaring "this environment is X") is a first-class mechanism, not a hack.
 
 ---
@@ -349,11 +351,10 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 
 ### Additional BLD requirements (compact)
 
-- **BLD-002** — A single build invocation may produce multiple variants (matrix build), but is not required to.
-- **BLD-003** — Variant metadata is generated from declared configuration; hand-rolling is discouraged but not blocked.
-- **BLD-004** — Building a variant does not require the target hardware to be present at build time.
-- **BLD-005** — Existing CI ergonomics (one job per variant, matrix syntax) work without bespoke tooling.
-- **BLD-006** — `pip wheel` / `python -m build` / equivalent commands produce variant wheels with no extra plugins for common cases.
+- **BLD-002** — Variant metadata is generated from declared configuration; hand-rolling is discouraged but not blocked.
+- **BLD-003** — Building a variant does not require the target hardware to be present at build time.
+- **BLD-004** — Existing CI ergonomics (one job per variant) work without bespoke tooling. *Priority:* should.
+- **BLD-005** — Standard build commands (`pip wheel`, `python -m build`, or equivalent) can produce variant wheels for common cases without extra plugins when a variant is explicitly requested (e.g. via a `config_settings` argument); a build with no variant request produces a non-variant wheel. *Priority:* should.
 
 ---
 
