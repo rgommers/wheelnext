@@ -76,7 +76,7 @@ Only **Statement**, **Rationale**, and **Priority** are expected on every fully 
 - **Priority** — `must`, `should`, or `may`: how critical the requirement is to the effort's success. These are not RFC 2119 keywords.
 - **Traces to** — the system goal (SYS-*) or more general requirement this entry refines.
 - **Allocation** — which PEP currently carries this, or `unallocated`. The [PEP allocation matrix](#pep-allocation-matrix) is authoritative at bucket level; this field adds PEP-section detail.
-- **Status** — `proposed`, `accepted`, `deferred`, `rejected`, `superseded`.
+- **Status** — `proposed`, `accepted`, `deferred`, `rejected`, `superseded`. The default is `proposed`; only non-default statuses are annotated.
 - **Source** — where the requirement originated (Discourse thread, issue, stakeholder).
 - **Verification** — how we will know the requirement is met (benchmark, conformance test, prototype, deployment evidence). Used where verification is non-obvious; absence means the default of verification by review of the realized design.
 - **Dependencies** — peer requirement IDs this genuinely depends on; conflicts, on the rare occasions they exist, are called out explicitly as such. Refinement of a more general requirement belongs in *Traces to*, not here.
@@ -85,6 +85,8 @@ Only **Statement**, **Rationale**, and **Priority** are expected on every fully 
 Filing rule: every requirement has **one home bucket**. Related concerns in other buckets cross-reference it by ID rather than restating it.
 
 Full entries are written out because they are load-bearing — hence their priorities are overwhelmingly `must`. Compact entries carry an inline *Priority* annotation only where one has been assigned; an unannotated compact entry has not yet been prioritized.
+
+Status follows the same convention: unannotated means `proposed`. The `accepted` annotations below derive from the review pass of PEP 825 — each marked entry was verified as reflected in the current PEP 825 draft. Entries covered by the not-yet-published PEPs remain `proposed` until those drafts can be reviewed the same way.
 
 Requirements are written out in full when they become decision-relevant; the rest are listed compactly. This page is the single home of every requirement — there are no separate detail pages.
 
@@ -108,6 +110,7 @@ These are the high-level commitments the whole design is accountable to. Every l
 - **Rationale:** The `pkg`/`pkg-cpu`/`pkg-cuda12` pattern is the workaround the proposal is *replacing*. Splitting names breaks dependency resolution across the ecosystem, complicates upgrades, and enables name squatting.
 - **Priority:** must
 - **Allocation:** PEP 825 (data model)
+- **Status:** accepted
 - **Dependencies:** SEC-003
 
 ### SYS-003 — Backward compatibility
@@ -115,6 +118,7 @@ These are the high-level commitments the whole design is accountable to. Every l
 - **Statement:** Existing non-variant wheels, indices, installers, and build backends shall continue to function unchanged.
 - **Priority:** must
 - **Allocation:** PEP 825, MIG-* requirements
+- **Status:** accepted
 - **Note:** PEP 825 §Variant label introduces a constraint that Python tags in wheel filenames MUST NOT start with a digit, applying to all wheels (not only variant wheels) once the PEP is accepted. SYS-003 is satisfied conditionally on this: existing wheels (which do not start their Python tags with digits) remain installable, but the constraint becomes ecosystem-wide for new wheels going forward.
 
 ### SYS-004 — Auditability
@@ -167,6 +171,7 @@ The shape of the wheel file, the variant metadata, and how variants are identifi
 - **Rationale:** Index servers, mirrors, caches, and existing wheel-handling tooling operate on filenames. A wheel with no filename-level distinguishing component cannot be referenced or selected without content inspection.
 - **Priority:** must
 - **Allocation:** PEP 825 §Variant label
+- **Status:** accepted
 - **Note:** "Identity" here means *which variant of this package this wheel is*, not *what compatibility properties this variant has*. The properties are covered by DM-001b.
 
 ### DM-001b — Variant properties may require metadata fetch
@@ -175,6 +180,7 @@ The shape of the wheel file, the variant metadata, and how variants are identifi
 - **Rationale:** Encoding properties in the filename would either require very long filenames (problematic on Windows and some filesystems) or impose arbitrary limits on property counts, making the format unsuitable for multidimensional compatibility matrices. PEP 825 §Rejected Ideas → "Predictable variant labels" engages this trade-off and rejects the encode-in-filename design for these reasons.
 - **Priority:** must
 - **Allocation:** PEP 825 §Variant label, §Variant metadata, §Index-level metadata
+- **Status:** accepted
 - **Analysis:** PEP 825 §Rejected Ideas ("Predictable variant labels") works through the rejected alternatives — properties encoded directly in the label, and properties as a hash of the property set.
 
 ### DM-002 — Variant metadata schema
@@ -182,6 +188,7 @@ The shape of the wheel file, the variant metadata, and how variants are identifi
 - **Statement:** Variant metadata shall be expressed in a machine-readable schema with a documented version field.
 - **Priority:** must
 - **Allocation:** PEP 825
+- **Status:** accepted
 - **Verification:** JSON Schema (or equivalent) published with the PEP; round-trip tests in the reference implementation.
 
 ### DM-003 — Index-level discoverability
@@ -190,15 +197,16 @@ The shape of the wheel file, the variant metadata, and how variants are identifi
 - **Rationale:** Downloading every wheel just to decide which one to keep would defeat the purpose for large GPU wheels.
 - **Priority:** must
 - **Allocation:** PEP 825 + companion index PEP
+- **Status:** accepted
 
 ### Additional DM requirements (compact)
 
-- **DM-004** — Wheel files remain valid wheels per the existing wheel spec; variant support is an extension, not a fork.
-- **DM-005** — Variant metadata round-trips losslessly through unpack/repack cycles.
-- **DM-006** — Multiple orthogonal variant axes (e.g. `cuda=12` AND `cpu_features=avx512`) shall be expressible in a single variant identifier.
+- **DM-004** — Wheel files remain valid wheels per the existing wheel spec; variant support is an extension, not a fork. *Status:* accepted.
+- **DM-005** — Variant metadata round-trips losslessly through unpack/repack cycles. *Status:* accepted.
+- **DM-006** — Multiple orthogonal variant axes (e.g. `cuda=12` AND `cpu_features=avx512`) shall be expressible in a single variant identifier. *Status:* accepted.
 - **DM-007** — Feature values within a `(namespace, feature)` tuple shall be treated as a set and serialized in canonical lexically-sorted form, so tools can compare metadata using equality. Note: this is narrower than the original draft, which incorrectly implied namespace order was non-semantic; per PEP 825 §Default priorities, namespace order is semantically meaningful (it drives variant selection priority) and is not canonical-izable.
-- **DM-008** — The null variant (no variant specified) shall always be a valid value.
-- **DM-009** — Variant wheels shall be able to express dependencies whose presence or version is conditional on variant identity (e.g. a CUDA-variant wheel having different transitive deps from a CPU-variant wheel of the same package and version). *Allocation:* PEP 825 §Environment markers (which provides this via four new markers — `variant_namespaces`, `variant_features`, `variant_properties`, `variant_label` — as the design realisation).
+- **DM-008** — The null variant (no variant specified) shall always be a valid value. *Status:* accepted.
+- **DM-009** — Variant wheels shall be able to express dependencies whose presence or version is conditional on variant identity (e.g. a CUDA-variant wheel having different transitive deps from a CPU-variant wheel of the same package and version). *Allocation:* PEP 825 §Environment markers (which provides this via four new markers — `variant_namespaces`, `variant_features`, `variant_properties`, `variant_label` — as the design realisation). *Status:* accepted.
 
 ---
 
@@ -219,6 +227,7 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **Rationale:** Index queries happen frequently, sometimes against untrusted indices, and often in environments (CI runners, locked-down hosts) where executing third-party code is unacceptable.
 - **Priority:** must
 - **Traces to:** SEC-001
+- **Status:** accepted
 - **Analysis:** the accepted design — provider declared in wheel metadata, executed only after wheel-candidate selection, never at index-query time — and the rejected execute-during-index-parsing alternative are worked through in [OA-001](./options-analyses/oa-001-variant-compatibility-mechanism.md) and the providers PEP draft.
 
 ### PROV-003 — Provider trust model is explicit
@@ -246,18 +255,20 @@ The plugin model that decides whether a given variant is compatible with the cur
 - **Statement:** Given the same inputs (installed providers, environment, available variants), the installer shall always select the same variant.
 - **Rationale:** Reproducibility. Non-determinism here would propagate into every CI run, every Docker image build, every lockfile.
 - **Priority:** must
+- **Status:** accepted
 
 ### RES-002 — Documented selection priority
 
 - **Statement:** The rules for choosing among multiple compatible variants shall be documented, predictable, and stable across installer implementations.
 - **Priority:** must
+- **Status:** accepted
 - **Verification:** cross-installer conformance tests (pip, uv, Poetry).
 
 ### Additional RES requirements (compact)
 
 - **RES-003** — Variant selection coordinates across packages in a resolution (e.g. consistent CUDA major version across dependent libraries).
 - **RES-004** — A null-variant fallback is always considered when no specific variant matches.
-- **RES-005** — The selected variant identity is recordable in lockfiles in a portable form.
+- **RES-005** — The selected variant identity is recordable in lockfiles in a portable form. *Status:* accepted.
 - **RES-006** — Resolution caches variant decisions; cache invalidation rules are documented. *Priority:* should.
 - **RES-007** — When no compatible variant exists, the installer fails with a diagnosable error rather than silently installing nothing or installing something arbitrary.
 - **RES-008** — Variant selection occurs during dependency resolution, not as a post-resolution install-time step. *Rationale:* selection affects what gets installed; deferring it would split the resolution graph in two and break lockfiles. *Priority:* must.
@@ -365,14 +376,15 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 
 - **Statement:** Variant metadata shall be served by existing simple-repository APIs without API-breaking changes.
 - **Priority:** must
+- **Status:** accepted
 
 ### Additional IDX requirements (compact)
 
-- **IDX-002** — Variant metadata is fetchable independently of the wheel payload (small JSON, cacheable separately).
+- **IDX-002** — Variant metadata is fetchable independently of the wheel payload (small JSON, cacheable separately). *Status:* accepted.
 - **IDX-003** — Existing mirror tooling replicates variants correctly without understanding them.
 - **IDX-004** — A variant-unaware client served by a variant-aware index gets the non-variant wheel if one exists; otherwise no compatible wheel is found. Variant wheels are filtered out by ordinary filename verification (per PEP 825 §Backwards Compatibility). The null variant is not what unaware clients install — see MIG-002a.
 - **IDX-005** — A variant-aware client served by a variant-unaware index degrades to current behavior.
-- **IDX-006** — Index tooling shall guarantee consistency between the index-level variant metadata file (`{name}-{version}-variants.json`) and the variant metadata embedded in each variant wheel for the same `(name, version)`. *Rationale:* auditors and downstream tooling rely on the index-level file as a faithful summary of what the wheels actually declare; divergence between the two would silently break variant selection or hide variants from audit. *Allocation:* PEP 825 §Index-level metadata.
+- **IDX-006** — Index tooling shall guarantee consistency between the index-level variant metadata file (`{name}-{version}-variants.json`) and the variant metadata embedded in each variant wheel for the same `(name, version)`. *Rationale:* auditors and downstream tooling rely on the index-level file as a faithful summary of what the wheels actually declare; divergence between the two would silently break variant selection or hide variants from audit. *Allocation:* PEP 825 §Index-level metadata. *Status:* accepted.
 
 ---
 
@@ -382,6 +394,7 @@ This bucket is currently **unallocated** to a specific PEP. See [Open Allocation
 
 - **Statement:** Wheels that exist today shall remain installable, with no metadata or repackaging required.
 - **Priority:** must
+- **Status:** accepted
 
 ### Additional MIG requirements (compact)
 
